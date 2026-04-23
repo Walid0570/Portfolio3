@@ -1,0 +1,326 @@
+"use client"
+
+import { useState, useRef, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ExternalLink, Github, Shield, BarChart3, Building2, ShoppingCart, Smartphone, Bot, UtensilsCrossed, Brain, BookOpen, Monitor, Eye, MoreHorizontal } from "lucide-react"
+import { cn } from "@/lib/utils"
+
+const categories = ["Tous", "Site Vitrine", "SaaS", "E-commerce", "IA"]
+
+const projects = [
+  {
+    id: 1,
+    title: "MySécuriTech",
+    description: "Site vitrine professionnel pour une entreprise de securite et technologies. Design moderne avec animations fluides et interface responsive optimisee pour le SEO.",
+    icon: Shield,
+    category: "Site Vitrine",
+    technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    liveUrl: "https://www.mysecuritech.fr/",
+    githubUrl: "#",
+    featured: true,
+    color: "from-blue-500/20 to-cyan-500/20",
+  },
+  {
+    id: 2,
+    title: "O Delice 42",
+    description: "Site vitrine elegant pour un restaurant gastronomique. Presentation du menu, reservation en ligne et galerie photo immersive pour une experience culinaire digitale.",
+    icon: UtensilsCrossed,
+    category: "Site Vitrine",
+    technologies: ["Next.js", "Tailwind CSS", "Framer Motion", "Prisma"],
+    liveUrl: "#",
+    githubUrl: "#",
+    featured: true,
+    color: "from-amber-500/20 to-orange-500/20",
+    inProgress: true,
+  },
+  {
+    id: 3,
+    title: "Bibliothèque Laravel",
+    description: "Laravel est un framework PHP open-source populaire pour le développement d'applications web. Il fournit une architecture élégante et expressive qui facilite la création d'applications robustes et maintenables. Ce projet est une bibliothèque développée avec Laravel.",
+    icon: BookOpen,
+    category: "Site Vitrine",
+    technologies: ["Laravel", "PHP", "MySQL", "Blade"],
+    liveUrl: "#",
+    githubUrl: "https://github.com/Walid0570/bibliotech2-laravel-SP",
+    featured: false,
+    color: "from-red-500/20 to-pink-500/20",
+  },
+  {
+    id: 4,
+    title: "Gestion de parc informatique GLPI",
+    description: "GLPI (Gestion Libre de Parc Informatique) est un logiciel open-source de gestion des actifs informatiques et de helpdesk. Il permet de gérer l'inventaire matériel et logiciel, les tickets d'incident, les demandes de service, etc. Ce projet démontre l'utilisation de GLPI pour la gestion informatique.",
+    icon: Monitor,
+    category: "SaaS",
+    technologies: ["GLPI", "PHP", "MySQL"],
+    liveUrl: "#",
+    githubUrl: "#",
+    imageUrl: "https://glpi-project.org/wp-content/uploads/2020/02/logo-glpi-bleu-1.png",
+    featured: false,
+    color: "from-green-500/20 to-teal-500/20",
+  },
+  {
+    id: 5,
+    title: "Arssel",
+    description: "Site vitrine moderne avec une architecture back-end robuste incluant une base de données pour la gestion de contenu dynamique et des fonctionnalités avancées.",
+    icon: Building2,
+    category: "Site Vitrine",
+    technologies: ["Next.js", "Prisma", "PostgreSQL", "Node.js", "API REST"],
+    liveUrl: "https://arssel.netlify.app",
+    githubUrl: "#",
+    featured: false,
+    color: "from-teal-500/20 to-cyan-500/20",
+  },
+  {
+    id: 6,
+    title: "Boutique Professionnel",
+    description: "Application de gestion de boutique développée en Python. Système complet pour la gestion des produits, des ventes et de l'inventaire avec une interface utilisateur moderne.",
+    icon: ShoppingCart,
+    category: "E-commerce",
+    technologies: ["Python", "Tkinter", "SQLite"],
+    liveUrl: "#",
+    githubUrl: "https://github.com/Walid0570/ccf_boutikpro_codespaces",
+    featured: false,
+    color: "from-purple-500/20 to-pink-500/20",
+  },
+]
+
+function useInView(ref: React.RefObject<HTMLElement | null>) {
+  const [isInView, setIsInView] = useState(false)
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.1 }
+    )
+    if (ref.current) observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [ref])
+  
+  return isInView
+}
+
+export function Projects() {
+  const [activeCategory, setActiveCategory] = useState("Tous")
+  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const isInView = useInView(sectionRef)
+
+  const filteredProjects = activeCategory === "Tous" 
+    ? projects 
+    : projects.filter(project => project.category === activeCategory)
+
+  return (
+    <section ref={sectionRef} id="projects" className="py-20 lg:py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className={cn(
+            "text-center mb-16 transition-all duration-700",
+            isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            <p className="text-primary font-medium mb-2 tracking-wider uppercase text-sm">
+              Mon Travail
+            </p>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+              Projets Recents
+            </h2>
+            <div className="w-20 h-1 bg-primary mx-auto rounded-full" />
+          </div>
+          
+          {/* Filter Buttons */}
+          <div className={cn(
+            "flex flex-wrap justify-center gap-2 mb-12 transition-all duration-700 delay-200",
+            isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            {categories.map((category) => (
+              <Button
+                key={category}
+                variant={activeCategory === category ? "default" : "outline"}
+                size="sm"
+                onClick={() => setActiveCategory(category)}
+                className={cn(
+                  "transition-all duration-300",
+                  activeCategory === category && "shadow-lg shadow-primary/25 scale-105"
+                )}
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+          
+          {/* Projects Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project, index) => {
+              const IconComponent = project.icon
+              return (
+                <article 
+                  key={project.id}
+                  className={cn(
+                    "group bg-card rounded-xl border border-border overflow-hidden transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2",
+                    project.featured && "ring-1 ring-primary/30",
+                    isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+                  )}
+                  style={{ transitionDelay: `${300 + index * 100}ms` }}
+                >
+                  {/* Project Image/Icon */}
+                  <div className={cn(
+                    "aspect-video relative overflow-hidden bg-gradient-to-br",
+                    project.color
+                  )}>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <IconComponent className="w-16 h-16 text-foreground/30 group-hover:scale-110 group-hover:text-foreground/50 transition-all duration-500" />
+                    </div>
+                    {project.featured && (
+                      <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground">
+                        En vedette
+                      </Badge>
+                    )}
+                    {project.inProgress && (
+                      <Badge className="absolute top-3 left-3 bg-amber-500 text-white animate-pulse">
+                        En cours
+                      </Badge>
+                    )}
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-background/90 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-4">
+                      {project.liveUrl !== "#" && (
+                        <a 
+                          href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-primary rounded-full text-primary-foreground hover:scale-110 transition-transform shadow-lg"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </a>
+                      )}
+                      {project.githubUrl !== "#" && (
+                        <a 
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-card rounded-full text-foreground hover:scale-110 transition-transform border border-border shadow-lg"
+                        >
+                          <Github className="w-5 h-5" />
+                        </a>
+                      )}
+                      {project.imageUrl && project.githubUrl === "#" && (
+                        <a 
+                          href={project.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-3 bg-card rounded-full text-foreground hover:scale-110 transition-transform border border-border shadow-lg"
+                        >
+                          <Eye className="w-5 h-5" />
+                        </a>
+                      )}
+                      <button 
+                        onClick={() => setSelectedProject(project)}
+                        className="p-3 bg-card rounded-full text-foreground hover:scale-110 transition-transform border border-border shadow-lg"
+                      >
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Project Info */}
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="secondary" className="text-xs">
+                        {project.category}
+                      </Badge>
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <button
+                      onClick={() => setSelectedProject(project)}
+                      className="text-xs text-primary hover:text-primary/80 transition-colors"
+                    >
+                      Voir plus...
+                    </button>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {project.technologies.map((tech) => (
+                        <span 
+                          key={tech}
+                          className="text-xs px-2 py-1 bg-secondary/80 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+          
+          {/* View More */}
+          <div className={cn(
+            "text-center mt-12 transition-all duration-700 delay-700",
+            isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            <Button variant="outline" size="lg" asChild className="group">
+              <a href="https://github.com/Walid0570" target="_blank" rel="noopener noreferrer">
+                <Github className="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform" />
+                Voir Plus sur GitHub
+              </a>
+            </Button>
+          </div>
+
+          {/* Project Details Dialog */}
+          {selectedProject && (
+            <Dialog open={!!selectedProject} onOpenChange={() => setSelectedProject(null)}>
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    {(() => {
+                      const IconComponent = selectedProject.icon;
+                      return <IconComponent className="w-6 h-6" />;
+                    })()}
+                    {selectedProject.title}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <p className="text-muted-foreground leading-relaxed">{selectedProject.description}</p>
+                  <div>
+                    <h4 className="font-semibold mb-2">Technologies utilisées:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProject.technologies.map((tech) => (
+                        <Badge key={tech} variant="secondary">{tech}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-4">
+                    {selectedProject.liveUrl !== "#" && (
+                      <Button asChild>
+                        <a href={selectedProject.liveUrl} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Voir le site
+                        </a>
+                      </Button>
+                    )}
+                    {selectedProject.githubUrl !== "#" && (
+                      <Button variant="outline" asChild>
+                        <a href={selectedProject.githubUrl} target="_blank" rel="noopener noreferrer">
+                          <Github className="w-4 h-4 mr-2" />
+                          Voir sur GitHub
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}
